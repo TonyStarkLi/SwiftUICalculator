@@ -52,7 +52,20 @@ enum CalculatorButton: String {
     
 }
 
+// Env object
+// You can treat this as the gloabl application state
+class GlobalEnvironment: ObservableObject {
+    
+    @Published var display = ""
+    
+    func receiveInput(calculatorButton: CalculatorButton) {
+        self.display = calculatorButton.title
+    }
+}
+
 struct ContentView: View {
+    
+    @EnvironmentObject var env: GlobalEnvironment
     
     let buttons: [[CalculatorButton]] = [
         [.ac, .plusMinus, .percent, .divide],
@@ -72,7 +85,7 @@ struct ContentView: View {
                 
                 HStack {
                     Spacer()
-                    Text("42").foregroundColor(.white)
+                    Text(env.display).foregroundColor(.white)
                     .font(.system(size: 64))
                 }.padding()
                 
@@ -82,7 +95,7 @@ struct ContentView: View {
                         ForEach(row, id: \.self) { button in
                             
                             Button(action: {
-                                
+                                self.env.receiveInput(calculatorButton: button)
                             }) {
                                 
                                 Text(button.title)
@@ -111,6 +124,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().environmentObject(GlobalEnvironment())
     }
 }
